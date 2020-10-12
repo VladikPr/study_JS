@@ -43,11 +43,12 @@ let expense1 = prompt("Введите обязательную статью ра
 let budgetMonth = money - (amount1  + amount2); //6)
 
 let missionMonth = mission / budgetMonth;  //7)
-console.log("Миссия будет тостигнута через: " + Math.ceil(missionMonth));
+console.log("Миссия будет тостигнута через: " + Math.ceil(missionMonth) + " месяцев");
 
 budgetDay = budgetMonth/30; //8)
+cconsole.log("Бюджет на день: " + budgetDay);
 
-if (budgetDay >= 1200){
+if (budgetDay >= 1200){  //9
     console.log("У вас высокий уровень дохода");
 }else if (budgetDay >= 600 && budgetDay < 1200){
     console.log("У вас средний уровень дохода");
