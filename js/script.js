@@ -16,23 +16,21 @@ let money = +prompt("Ваш месячный доход?",""),
 
 // Functions Declaration
 // 1)
-function getExpensesMonth() {
-    return ("Ежемесячные расходы: " + ( amount1 + amount2) + " руб.");
+function getExpensesMonth(a,b) {
+    return a + b
 }
 
 // 2)
-function getAccumulatedMonth() {
-    let budgetMonth = money - (amount1  + amount2);
-    return budgetMonth
+function getAccumulatedMonth(revenue, expenditure1, expenditure2) {
+    return revenue - (expenditure1  + expenditure2);
 }
 
 //3) 
-let accumulatedMonth = getAccumulatedMonth();
+let accumulatedMonth = getAccumulatedMonth(money, amount1, amount2);
 
 //4
-function getTargetMonth() {
-    let missionMonth = mission/accumulatedMonth;
-    return ("Миссия будет тостигнута через: " + Math.ceil(missionMonth) + " месяцев")
+function getTargetMonth(target, sumMonth) {
+    return Math.ceil(target/sumMonth)
 }
 
 //6
@@ -43,12 +41,12 @@ function showTypeOf(data){
     return typeof(data);
 }
 
-function getStatusIncome(budgetDay){
-    if (budgetDay >= 1200){  //9
+function getStatusIncome(data){
+    if (data >= 1200){  //9
         return ("У вас высокий уровень дохода")
-    }else if (budgetDay >= 600 && budgetDay < 1200){
+    }else if (data >= 600 && data < 1200){
         return ("У вас средний уровень дохода")
-    }else if (budgetDay < 600 && budgetDay >= 0){
+    }else if (data < 600 && data >= 0){
         return ("К сожалению у вас уровень дохода ниже среднего");
     }else{    // or -> else if(budgetDay < 0) without else
         return ("Что то пошло не так")
@@ -62,9 +60,9 @@ console.log(showTypeOf(income));
 console.log(showTypeOf(deposit));
 console.log(addExpenses.toLowerCase().split(", "));
 
-console.log("Бюджет на месяц: " + getAccumulatedMonth());
-console.log(getExpensesMonth());
-console.log(getTargetMonth());
+console.log("Бюджет на месяц: " + getAccumulatedMonth(money, amount1, amount2));
+console.log("Ежемесячные расходы: " + getExpensesMonth(amount1, amount2) + " руб.");
+console.log("Миссия будет тостигнута через: " + getTargetMonth(mission, accumulatedMonth) + " месяцев");
 console.log("Бюджет на день: " + budgetDay.toFixed());
 
-getStatusIncome();
+console.log(getStatusIncome(budgetDay));
