@@ -66,9 +66,7 @@ function getTargetMonth(target, sumMonth) {
     }
 }
 
-
 budgetDay = accumulatedMonth/30;
-
 
 
 function getStatusIncome(data){
