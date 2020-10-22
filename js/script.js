@@ -197,13 +197,13 @@ let appData = {
         return appData.budgetMonth * periodSelect.value;
     }
 };
+calculate.disabled = true;
 
-calculate.addEventListener('click', function(){
-        if(salaryAmount.value !== ""){
-            appData.start();
-        }
-        
- });
+salaryAmount.addEventListener('input', e => {
+    calculate.disabled = !(e.target.value.length > 1)
+});
+
+calculate.addEventListener('click', appData.start);
 
 plusExpensesBtn.addEventListener('click', appData.addExpenesBlock);
 
@@ -211,3 +211,6 @@ plusIncomeBtn.addEventListener('click', appData.addIncomeBlock);
 
 periodSelect.addEventListener('change', appData.getPeriod);
 
+calculate.addEventListener('mouseenter', function(){
+
+})
