@@ -200,7 +200,7 @@ let appData = {
 calculate.disabled = true;
 
 salaryAmount.addEventListener('input', e => {
-    calculate.disabled = !(e.target.value.length > 1)
+    calculate.disabled = !(e.target.value.length > 1);
 });
 
 calculate.addEventListener('click', appData.start);
@@ -211,6 +211,3 @@ plusIncomeBtn.addEventListener('click', appData.addIncomeBlock);
 
 periodSelect.addEventListener('change', appData.getPeriod);
 
-calculate.addEventListener('mouseenter', function(){
-
-})
