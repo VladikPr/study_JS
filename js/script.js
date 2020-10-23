@@ -87,6 +87,12 @@ let appData = {
         let cloneExpensesItem = expensesItems[0].cloneNode(true);
         expensesItems[0].parentNode.insertBefore(cloneExpensesItem, plusExpensesBtn);
         expensesItems = document.querySelectorAll('.expenses-items');
+        let expensesFields = cloneExpensesItem.querySelectorAll('input');
+
+        expensesFields.forEach(function(item){
+                item.placeholder = "";
+        });
+
 
         if(expensesItems.length === 3){
             plusExpensesBtn.style.display = "none"; 
@@ -98,6 +104,11 @@ let appData = {
         let cloneIncomeItem = incomeItems[0].cloneNode(true);
         incomeItems[0].parentNode.insertBefore(cloneIncomeItem, plusIncomeBtn);
         incomeItems = document.querySelectorAll('.income-items');
+        let incomeFields = cloneIncomeItem.querySelectorAll('input');
+
+        incomeFields.forEach(function(item){
+                item.placeholder = "";
+        });
 
         if(incomeItems.length === 3){
             plusIncomeBtn.style.display = "none"; 
@@ -209,5 +220,25 @@ plusExpensesBtn.addEventListener('click', appData.addExpenesBlock);
 
 plusIncomeBtn.addEventListener('click', appData.addIncomeBlock);
 
-periodSelect.addEventListener('change', appData.getPeriod);
+periodSelect.addEventListener('input', appData.getPeriod);
+
+
+let getAllInputs = document.querySelectorAll('input');
+
+getAllInputs.forEach(function(item){
+    item.addEventListener('input',function(event){
+        let text = event.target;
+        setTimeout(function() {
+            let repl;
+            if (event.target.placeholder === "Наименование"){
+                repl = /[^а-яА-ЯёЁ ""():;.,!?-]/g.exec(text.value);
+            } else if(event.target.placeholder === "Сумма"){
+                repl = /[^0-9]/g.exec(text.value);
+            }
+           text.value = text.value.replace(repl, '');
+          }, 0);
+    });
+})
+
+
 
