@@ -57,26 +57,25 @@ let appData = {
     moneyDeposit: 0,
     period: 0,
     start: function() {
-        appData.budget = +salaryAmount.value;
-        
-        appData.getExpenses();
-        appData.getExpensesMonth();
-        appData.getAddExpenses();
-        appData.getAddIncome();
-        appData.getIncome();
-        appData.getBudget();
+        this.budget = +salaryAmount.value;
+        this.getExpenses();
+        this.getExpensesMonth();
+        this.getAddExpenses();
+        this.getAddIncome();
+        this.getIncome();
+        this.getBudget();
 
-        appData.showResult();
-
+        this.showResult();
+        this.disableInputs();
     },
     showResult: function(){
-        budgetMonthValue.value = appData.budgetMonth;
-        budgetDayValue.value = appData.budgetDay;
-        expensesMonthValue.value = appData.expensesMonth;
-        additionalExpensesValue.value = appData.addExpenses.join(", ");
-        additionalIncomeValue.value = appData.addIncome.join(", ");
-        targetMonthValue.value = appData.getTargetMonth();
-        incomePeriodValue.value = appData.calcSavedMoney();
+        budgetMonthValue.value = this.budgetMonth;
+        budgetDayValue.value = this.budgetDay;
+        expensesMonthValue.value = this.expensesMonth;
+        additionalExpensesValue.value = this.addExpenses.join(", ");
+        additionalIncomeValue.value = this.addIncome.join(", ");
+        targetMonthValue.value = this.getTargetMonth();
+        incomePeriodValue.value = this.calcSavedMoney();
         periodSelect.addEventListener('change', function(){
             incomePeriodValue.value = appData.budgetMonth * periodSelect.value
         });
@@ -136,7 +135,7 @@ let appData = {
         });
 
         for (let key in appData.income){
-            appData.incomeMonth += +appData.income[key]; 
+            this.incomeMonth += +this.income[key]; 
         }
     },
     getAddExpenses: function() {
@@ -159,25 +158,25 @@ let appData = {
     getExpensesMonth: function() {
        let sum = 0;
 
-       for (let key in appData.expenses) {
-           sum+= appData.expenses[key]*1;
+       for (let key in this.expenses) {
+           sum+= this.expenses[key]*1;
        }
 
-       appData.expensesMonth = sum;
+       this.expensesMonth = sum;
     },
     getBudget: function() {
-        appData.budgetMonth = appData.budget + appData.incomeMonth - appData.expensesMonth;
-        appData.budgetDay = (appData.budgetMonth/30).toFixed();
+        this.budgetMonth = this.budget + this.incomeMonth - this.expensesMonth;
+        this.budgetDay = (this.budgetMonth/30).toFixed();
     },
     getTargetMonth: function() {
-        if ((targetAmount.value/appData.budgetMonth) <= 0 || targetAmount.value === ""){
+        if ((targetAmount.value/this.budgetMonth) <= 0 || targetAmount.value === ""){
             return 0;
         }else{
-            return Math.ceil(targetAmount.value/appData.budgetMonth);
+            return Math.ceil(targetAmount.value/this.budgetMonth);
         }
     },
     getStatusIncome: function() {
-        let data = appData.budgetDay;
+        let data = this.budgetDay;
         if (data >= 1200){  //9
             return ("У вас высокий уровень дохода")
         }else if (data >= 600 && data < 1200){
@@ -188,40 +187,82 @@ let appData = {
             return ("Что то пошло не так")
         };
     },
-    getInfoDeposit: function() {
-        if(appData.deposit) {
-            let a,
-                b
-            do{
-                a = prompt('Какой годовой процент?', '10');
-                b = prompt('Какая сумма заложена?', 10000);
-            } while (!isNumber(a) || !isNumber(a) || a === "" || b === "" || a === null || b === null);
-            appData.percentDeposit = a;
-            appData.moneyDeposit = b;
-            
-        }
-    },
     getPeriod: function() {
         periodAmount.textContent = periodSelect.value;
     },
     calcSavedMoney: function() {
         return appData.budgetMonth * periodSelect.value;
+    },
+    disableInputs: function() {
+        let allInputFields = document.querySelectorAll('input[type=text]');
+        allInputFields.forEach(function(item){
+            item.disabled = true;
+        });
+        calculate.style.display = "none";
+        cancelBtn.style.display = "block";
+
+    },
+    reset: function(event){
+        event.preventDefault();
+        this.budget = 0;
+        this.budgetDay = 0,
+        this.budgetMonth = 0,
+        this.incomeMonth = 0,
+        this.expensesMonth = 0,
+        this.income = {};
+        this.addIncome = [];
+        this.expenses = {};
+        this.addExpenses = [];
+        this.deposit = false;
+        this.percentDeposit = 0;
+        this.moneyDeposit = 0;
+        this.period = 0;
+        this.enableCleanInputs();
+        this.deleteAddBlocks();
+    },
+    enableCleanInputs: function(){
+        let allInputFields = document.querySelectorAll('input');
+        allInputFields.forEach(function(item){
+            item.disabled = false;
+            item.value = "";
+        });
+        checkBox.checked = false;
+        periodSelect.value = "1";
+        periodAmount.textContent = "1";
+
+        calculate.style.display = "block";
+        cancelBtn.style.display = "none";
+    },
+    deleteAddBlocks: function(){
+        function deleteElements(element, btn){
+            element.forEach(function(item, i){
+                if (i !== 0){
+                    item.remove();
+                }
+            });
+            btn.style.display = ""; 
+        }
+        deleteElements(incomeItems, plusIncomeBtn);
+        deleteElements(expensesItems, plusExpensesBtn);
+        
     }
 };
+
 calculate.disabled = true;
 
 salaryAmount.addEventListener('input', e => {
     calculate.disabled = !(e.target.value.length > 1);
 });
 
-calculate.addEventListener('click', appData.start);
+calculate.addEventListener('click', appData.start.bind(appData));
 
 plusExpensesBtn.addEventListener('click', appData.addExpenesBlock);
 
 plusIncomeBtn.addEventListener('click', appData.addIncomeBlock);
 
-periodSelect.addEventListener('input', appData.getPeriod);
+periodSelect.addEventListener('input', appData.getPeriod.bind(appData));
 
+cancelBtn.addEventListener('click', appData.reset.bind(appData));
 
 let getAllInputs = document.querySelectorAll('input');
 
