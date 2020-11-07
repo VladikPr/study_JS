@@ -26,12 +26,14 @@ class Todo {
         li.classList.add('todo-item');
         li.key = todo.key;
         li.insertAdjacentHTML('beforeend', `
-            <span class="text-todo">${todo.value}</span>
-			<div class="todo-buttons">
+            <span class="text-todo" contenteditable=${todo.edit}>${todo.value}</span>
+            <div class="todo-buttons">
+                <button class="todo-edit"></button>
 				<button class="todo-remove"></button>
 				<button class="todo-complete"></button>
 			</div>
         `);
+
     
         if(todo.completed){
             this.todoCompleted.append(li);
@@ -48,7 +50,8 @@ class Todo {
             const newTodo = {
                 value: this.input.value,
                 completed: false,
-                key: this.generateKey()
+                key: this.generateKey(),
+                edit: false
             };
 
             this.todoData.set(newTodo.key, newTodo);
@@ -59,35 +62,123 @@ class Todo {
         }
     }
 
+
     generateKey() {
         return Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
     }
 
-    deletedItem(target) {
-        let targetKey = target.parentNode.parentNode.key;
-        this.todoData.delete(targetKey);
+    deletedItem(key,elem) {
+        let startAnimation;
+        let changer = 0;
+        let height = 50;
+        let elementGrandfather = elem.parentNode.parentNode;
+        //CSS Animation
+        /* elementGrandfather.style.cssText = `transition: all 0.5s ease;
+                                            transform: translateY(-200px);
+                                            opacity: 0;`;
+        elem.parentNode.parentNode.addEventListener('transitionend', ()=> {
+            this.todoData.delete(key);
+            this.render();
+        }); */
+
+        elem.parentNode.parentNode.textContent = "";
+        this.todoData.forEach((element) => {
+            if(key === element.key){
+                let deleteItem = () => {
+                    changer+=5;
+                    if((height-changer) < 0){
+                        cancelAnimationFrame(deleteItem);
+                    } else {
+                        startAnimation = requestAnimationFrame(deleteItem);
+                        elementGrandfather.style.height = (height - changer) + 'px';
+                        elementGrandfather.style.opacity = 1 - changer * 0.02;
+                    }
+                }
+                deleteItem();
+                
+            }
+        });
+    
+       
+        setTimeout(()=>{
+            this.todoData.delete(key);
+            this.render();
+        },500);
+        
     }
 
-    completedItem(target) {
-        let targetKey = target.parentNode.parentNode.key;
+    completedItem(key,elem) {
+        let item = elem.parentNode.parentNode;
+
         this.todoData.forEach((element) => {
-            if(targetKey === element.key){
-                element.completed ? element.completed = false : element.completed = true; 
+            if(key === element.key){
+                if(element.completed) {
+                    item.style.cssText = `transition: all 0.3s ease;
+                                        transform: translateY(-100px);
+                                        opacity: 0;`;
+                    item.addEventListener('transitionend', ()=> {
+                        element.completed = false;
+                        this.render();
+                    });
+                    
+                } else{
+                    item.style.cssText = `transition: all 0.3s ease;
+                                        transform: translateY(100px);
+                                        opacity: 0;`;
+                    item.addEventListener('transitionend', ()=> {
+                        element.completed = true; 
+                        this.render();
+                    });
+                    
+                }
             }
+        });
+    }
+    
+    editItem(key){
+        this.todoData.forEach((element) => {
+            if(key === element.key){
+               element.edit = true;
+            }
+        });
+    }
+
+    saveChanges(key,elem){
+        elem.style.outline = '';
+        let defaultValue = elem.textContent;
+        //change event
+        elem.addEventListener('blur', ()=> {
+            elem.style.outline = "0px solid transparent"; 
+            this.todoData.forEach((element) => {
+                if(key === element.key){
+                   if(elem.textContent <1){
+                        element.value = defaultValue;
+                   } else{
+                    element.value = elem.textContent;
+                   }
+                   element.edit = false;
+                   this.render();
+                }
+            });
         });
     }
 
     handler() {
         this.todoContainer.addEventListener('click', (e) =>{
             let target = e.target;
-            
+            let targetKey = target.parentNode.parentNode.key;
+
             if (target.classList.contains('todo-complete')){
-                this.completedItem(target);
+                this.completedItem(targetKey, target);
             } else if (target.classList.contains('todo-remove')){
-                this. deletedItem(target);
+                this. deletedItem(targetKey, target);
+            } else if(target.classList.contains('todo-edit')){
+                this.editItem(targetKey);
+                this.render();
+            } else if (target.classList.contains('text-todo')){
+                this.saveChanges(target.parentNode.key,target);
             }
 
-            this.render();
         });
     }
 
