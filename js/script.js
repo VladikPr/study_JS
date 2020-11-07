@@ -70,8 +70,8 @@ class Todo {
     deletedItem(key,elem) {
         let startAnimation;
         let changer = 0;
-        let height = 50;
-        let elementGrandfather = elem.parentNode.parentNode;
+        const height = 50;
+        const elementGrandfather = elem.closest('.todo-item');
         //CSS Animation
         /* elementGrandfather.style.cssText = `transition: all 0.5s ease;
                                             transform: translateY(-200px);
@@ -93,7 +93,7 @@ class Todo {
                         elementGrandfather.style.height = (height - changer) + 'px';
                         elementGrandfather.style.opacity = 1 - changer * 0.02;
                     }
-                }
+                };
                 deleteItem();
                 
             }
@@ -108,7 +108,7 @@ class Todo {
     }
 
     completedItem(key,elem) {
-        let item = elem.parentNode.parentNode;
+        const item = elem.closest('.todo-item');
 
         this.todoData.forEach((element) => {
             if(key === element.key){
@@ -145,7 +145,7 @@ class Todo {
 
     saveChanges(key,elem){
         elem.style.outline = '';
-        let defaultValue = elem.textContent;
+        const defaultValue = elem.textContent;
         //change event
         elem.addEventListener('blur', ()=> {
             elem.style.outline = "0px solid transparent"; 
@@ -165,8 +165,8 @@ class Todo {
 
     handler() {
         this.todoContainer.addEventListener('click', (e) =>{
-            let target = e.target;
-            let targetKey = target.parentNode.parentNode.key;
+            const target = e.target;
+            const targetKey = target.closest('.todo-item').key;
 
             if (target.classList.contains('todo-complete')){
                 this.completedItem(targetKey, target);
