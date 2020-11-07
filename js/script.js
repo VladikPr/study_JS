@@ -165,7 +165,7 @@ class Todo {
 
     handler() {
         this.todoContainer.addEventListener('click', (e) =>{
-            const target = e.target;
+            const {target} = e;
             const targetKey = target.closest('.todo-item').key;
 
             if (target.classList.contains('todo-complete')){
