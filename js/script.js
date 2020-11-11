@@ -11,7 +11,7 @@ class Todo {
     }
 
     addToStorage() {
-        localStorage.setItem('toDoList', JSON.stringify([...this.todoData]));
+        localStorage.setItem('toDoList', JSON.stringify([...this.todoData]) || []);
     }
     
     render() {
@@ -25,6 +25,7 @@ class Todo {
         const li = document.createElement('li');
         li.classList.add('todo-item');
         li.key = todo.key;
+        li.borderLine = todo.borderLine;
         li.insertAdjacentHTML('beforeend', `
             <span class="text-todo" contenteditable=${todo.edit}>${todo.value}</span>
             <div class="todo-buttons">
@@ -41,6 +42,12 @@ class Todo {
             this.todoList.append(li);
         }
 
+        if(li.borderLine === true){
+            li.querySelector('.text-todo').style.border= "1px solid black";
+        } else {
+            li.querySelector('.text-todo').style.border= "none";
+        }
+
     }
 
     addTodo(e) {
@@ -51,7 +58,8 @@ class Todo {
                 value: this.input.value,
                 completed: false,
                 key: this.generateKey(),
-                edit: false
+                edit: false,
+                borderLine: false
             };
 
             this.todoData.set(newTodo.key, newTodo);
@@ -139,6 +147,12 @@ class Todo {
         this.todoData.forEach((element) => {
             if(key === element.key){
                element.edit = true;
+
+               if(element.borderLine === false){
+                element.borderLine = true;
+               }else{
+                element.borderLine = false;
+               }
             }
         });
     }
@@ -154,9 +168,10 @@ class Todo {
                    if(elem.textContent <1){
                         element.value = defaultValue;
                    } else{
-                    element.value = elem.textContent;
+                        element.value = elem.textContent;
                    }
                    element.edit = false;
+                   element.borderLine = false;
                    this.render();
                 }
             });
@@ -166,18 +181,20 @@ class Todo {
     handler() {
         this.todoContainer.addEventListener('click', (e) =>{
             const {target} = e;
-            const targetKey = target.closest('.todo-item').key;
-
-            if (target.classList.contains('todo-complete')){
-                this.completedItem(targetKey, target);
-            } else if (target.classList.contains('todo-remove')){
-                this. deletedItem(targetKey, target);
-            } else if(target.classList.contains('todo-edit')){
-                this.editItem(targetKey);
-                this.render();
-            } else if (target.classList.contains('text-todo')){
-                this.saveChanges(target.parentNode.key,target);
-            }
+            if(!target.matches('.todo-list, .todo-completed')){
+                const targetKey = target.closest('.todo-item').key;
+                
+                if (target.classList.contains('todo-complete')){
+                    this.completedItem(targetKey, target);
+                } else if (target.classList.contains('todo-remove')){
+                    this. deletedItem(targetKey, target);
+                } else if(target.classList.contains('todo-edit')){
+                    this.editItem(targetKey);
+                    this.render();
+                } else if (target.classList.contains('text-todo')){
+                    this.saveChanges(target.parentNode.key, target);
+                }
+            } 
 
         });
     }
